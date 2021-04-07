@@ -30,48 +30,76 @@ export default {
     };
   },
   methods: {
-    deleteTask(id) {
-      this.tasks = this.tasks.filter((task) => task.id !== id);
+   async deleteTask(id) {
+     if (confirm('Are You Sure ?')) {
+       const res = await fetch(`api/tasks/${id}`,{
+       method: 'DELETE',
+       headers: {
+         'Content-Type': 'application/json'
+       }
+     })
+     res.status === 200 ? this.tasks = this.tasks.filter((task) => task.id !== id) : alert('Error')
+     }
     },
-    toggleReminder(id) {
+    async toggleReminder(id) {
+      const taskToToggle = await this.fetchTask(id)
+      const updateTask = {...taskToToggle, reminder: !taskToToggle.reminder}
+
+      const res = await fetch(`api/tasks/${id}`,{
+        method: 'PUT',
+        headers: {
+          'Content-Type' : 'application/json'
+        },
+        body: JSON.stringify(updateTask)
+      })
+      const data = await res.json();
+
       this.tasks = this.tasks.map((task) =>
         task.id === id
           ? {
               ...task,
-              reminder: !task.reminder,
+              reminder: data.reminder,
             }
           : task
       );
     },
-    addTask(task) {
-      this.tasks = [...this.tasks, task];
+    async addTask(task) {
+      const res = await fetch('api/tasks',{
+        method: 'POST',
+        headers: {
+          'Content-Type': "application/json"
+        },
+        body: JSON.stringify(task)
+      })
+      const data = await res.json()
+      this.tasks = [...this.tasks, data]
     },
     showAddTask() {
       this.showForm = !this.showForm;
-      console.log('click');
     },
+    async fetchTasks(){
+      const res = await fetch('api/tasks',{
+        method: 'GET',
+        headers: {
+          'Content-Type': "application/json"
+        }
+      })
+      const data = await res.json()
+      return data
+    },
+    async fetchTask(id){
+      const res = await fetch(`api/tasks/${id}`,{
+        method: 'GET',
+        headers: {
+          'Content-Type': "application/json"
+        }
+      })
+      const data = await res.json()
+      return data
+    }
   },
-  created() {
-    this.tasks = [
-      {
-        id: 1,
-        text: "Doctors 1st Appointment",
-        day: "March 1st at 2:30pm",
-        reminder: true,
-      },
-      {
-        id: 2,
-        text: "Meeting at School",
-        day: "March 1st at 2:30pm",
-        reminder: true,
-      },
-      {
-        id: 3,
-        text: "Doctors 1st Appointment",
-        day: "March 1st at 2:30pm",
-        reminder: false,
-      },
-    ];
+  async created() {
+    this.tasks = await this.fetchTasks()
   },
 };
 </script>
