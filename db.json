@@ -11,6 +11,12 @@
       "text": "Dua",
       "day": "Tiga",
       "reminder": true
+    },
+    {
+      "id": 40005,
+      "text": "Empat",
+      "day": "Lima",
+      "reminder": true
     }
   ]
 }

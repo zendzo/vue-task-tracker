@@ -14,6 +14,9 @@ export default {
   props: {
     tasks: Array
   },
+  created () {
+    console.log(this.tasks, "tasks");
+  },
   emits: ['delete-task', 'toggle-reminder']
 }
 </script>

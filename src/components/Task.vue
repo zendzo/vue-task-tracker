@@ -12,6 +12,9 @@ export default {
   name: 'Task',
   props: {
     task: Object
+  },
+  created () {
+    console.log(this.task, "task");
   }
 }
 </script>

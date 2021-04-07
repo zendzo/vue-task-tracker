@@ -1,105 +1,34 @@
 <template>
   <div class="container">
-    <Header @toggle-form="showAddTask()" title="Task Tracker" :showForm="showForm"/>
-    <div v-show="showForm">
-      <AddTask @add-task="addTask" />
-    </div>
-    <Tasks
-      @toggle-reminder="toggleReminder"
-      @delete-task="deleteTask"
-      :tasks="tasks"
+    <Header
+      @toggle-form="showAddTask()"
+      title="Task Tracker"
+      :showForm="showForm"
     />
+    <router-view :showForm="showForm"></router-view>
+    <Footer />
   </div>
 </template>
 
 <script>
 import Header from "./components/Header";
-import Tasks from "./components/Tasks";
-import AddTask from "./components/AddTask";
+import Footer from "./components/Footer";
+
 export default {
   name: "App",
   components: {
     Header,
-    Tasks,
-    AddTask,
+    Footer,
   },
   data() {
     return {
-      tasks: [],
       showForm: false,
     };
   },
   methods: {
-   async deleteTask(id) {
-     if (confirm('Are You Sure ?')) {
-       const res = await fetch(`api/tasks/${id}`,{
-       method: 'DELETE',
-       headers: {
-         'Content-Type': 'application/json'
-       }
-     })
-     res.status === 200 ? this.tasks = this.tasks.filter((task) => task.id !== id) : alert('Error')
-     }
-    },
-    async toggleReminder(id) {
-      const taskToToggle = await this.fetchTask(id)
-      const updateTask = {...taskToToggle, reminder: !taskToToggle.reminder}
-
-      const res = await fetch(`api/tasks/${id}`,{
-        method: 'PUT',
-        headers: {
-          'Content-Type' : 'application/json'
-        },
-        body: JSON.stringify(updateTask)
-      })
-      const data = await res.json();
-
-      this.tasks = this.tasks.map((task) =>
-        task.id === id
-          ? {
-              ...task,
-              reminder: data.reminder,
-            }
-          : task
-      );
-    },
-    async addTask(task) {
-      const res = await fetch('api/tasks',{
-        method: 'POST',
-        headers: {
-          'Content-Type': "application/json"
-        },
-        body: JSON.stringify(task)
-      })
-      const data = await res.json()
-      this.tasks = [...this.tasks, data]
-    },
     showAddTask() {
       this.showForm = !this.showForm;
     },
-    async fetchTasks(){
-      const res = await fetch('api/tasks',{
-        method: 'GET',
-        headers: {
-          'Content-Type': "application/json"
-        }
-      })
-      const data = await res.json()
-      return data
-    },
-    async fetchTask(id){
-      const res = await fetch(`api/tasks/${id}`,{
-        method: 'GET',
-        headers: {
-          'Content-Type': "application/json"
-        }
-      })
-      const data = await res.json()
-      return data
-    }
-  },
-  async created() {
-    this.tasks = await this.fetchTasks()
   },
 };
 </script>
@@ -115,7 +44,7 @@ body {
   font-family: "Poppins", sans-serif;
 }
 .container {
-  max-width: 500px;
+  max-width: 600px;
   margin: 30px auto;
   overflow: auto;
   min-height: 300px;

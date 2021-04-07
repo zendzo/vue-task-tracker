@@ -1,7 +1,12 @@
 <template>
   <header>
     <h1>{{ title }}</h1>
-    <Button @btn-click="$emit('toggle-form')" :color="showForm ? 'red':'green' " :text="showForm ? 'Close' : 'Add Task'" />
+    <Button
+      v-show="isHome"
+      @btn-click="$emit('toggle-form')"
+      :color="showForm ? 'red' : 'green'"
+      :text="showForm ? 'Close' : 'Add Task'"
+    />
   </header>
 </template>
 
@@ -16,6 +21,15 @@ export default {
   props: {
     title: String,
     showForm: false,
+  },
+  computed: {
+    isHome(){
+      if (this.$route.path === '/') {
+        return true
+      }else{
+        return false
+      }
+    }
   },
   emits: ["toggle-form"],
 };
